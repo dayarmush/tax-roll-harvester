@@ -67,51 +67,63 @@ def get_groups(text):
         'owner_address': '',
         'property_address': '',
         'property_type': '',
-        'full_market_value': ''
+        'full_market_value': '',
+        'acres': '',
+        'feet': '',
+        'east': '',
+        'north': ''
     }
+
+
+    full_market_value = 'FULL MARKET VALUE'
+    # acres = 'ACRES'
+    feet = 'FRNT'
+
+    east_pattern = r'EAST-(\d{7})'
+    north_pattern = r'NRTH-(\d{7})'
+    acres = r'ACRES(\s+\d+\.\d+)'
+    # front_in_feet = r'FRNT (\d+\.\d+)'
+    # depth_in_feet = r''
 
     # Split the text into lines
     lines = text.split('\n')
-    # Define the regular expression pattern
-    # pattern = r'FULL MARKET VALUE\s+([\d,]+)'
 
     for line in lines:
     # Check if the last item on the line starts with stars
         if line.strip().endswith('****'):
             # If we have collected lines in the current_group, add it to property_groups
             if current_group:
-                property_details['property_address'] = current_group[1][20:50].strip()
-                property_details['property_type'] = current_group[2][32:35]
-
-                if len(current_group) == 10:
-                    if 'U' in current_group[9][32:34]:
-                        property_details['full_market_value'] = current_group[9][50:70].strip()
-                
-                elif len(current_group) == 9:
-                    if 'U' in current_group[8][32:34]:
-                        property_details['full_market_value'] = current_group[8][50:70].strip()
-
-                elif len(current_group) == 8:
-                    if 'U' in current_group[7][32:34]:
-                        property_details['full_market_value'] = current_group[7][50:70].strip()
-
-                else:
-                    property_details['full_market_value'] = 'waste of space!!!!!!'
-
-                if current_group[4][0].isnumeric():
-                    property_details['owner_name'] = current_group[3][0:30].strip()
-                    property_details['owner_address'] = current_group[4][0:30].strip() + ' ' + current_group[5][0:30].strip()
-                else:
-                    property_details['owner_name'] = current_group[3][0:30].strip() + ', ' + current_group[4][0:30].strip()
-                    property_details['owner_address'] = current_group[5][0:30].strip() + ' ' + current_group[6][0:30].strip()
-
-                # if line[32:3] == 'FULL':
-                #     property_details['full_market_value'] = line[32:80].strip()
+                property_details['property_address'] = current_group[1][0:50].strip()
+                property_details['property_type'] = current_group[2][30:50].strip()
+            
 
                 property_groups.append(property_details)
                 current_group = []
                 property_details = {}
+    
+        # Ulster county acres = [36:45]
+        if re.search(acres, line) is not None:
+            match = re.search(acres, line)
+            property_details['acres'] = match.group(1)
+
+        # front_match = re.search(front_in_feet, line)
+        # if  front_match is not None:
+        #     property_details['feet'] = front_match
+
+        if full_market_value in line:
+            property_details['full_market_value'] = line[50:70].strip()
+
+        if re.search(east_pattern, line) is not None:
+            match = re.search(east_pattern, line)
+            property_details['east'] = match.group(1)
+
+        if re.search(north_pattern, line) is not None:
+            match = re.search(north_pattern, line)
+            property_details['north'] = match.group(1)
         
+        if feet in line:
+            property_details['feet'] = line[25:60].strip()
+
         # Append the line to the current_group
         current_group.append(line)
 
@@ -120,14 +132,15 @@ def get_groups(text):
     #     property_groups.append('\n'.join(current_group))
 
     # Filter out empty groups
-    # if len(property_groups[0]) > 0:
-    #     property_groups.remove(property_groups[0])
+    if property_groups and property_groups[0]:
+        property_groups.remove(property_groups[0])
+    else:
+        pass
     
     # property_groups = [group.strip() for group in property_groups if group.strip()]
 
     # Print each property group
     for group in property_groups:
         print(f"\n{group}")
-
 
 # get_groups(text_data)

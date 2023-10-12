@@ -3,11 +3,13 @@ import PyPDF2
 import re
 import os
 from io import BytesIO
+from test import get_groups
 
 pdfs = [
+    "https://www.columbiacountyny.com/uploads/1/0/6/8/106827239/ancram_23_fr.pdf",
+    "https://greene.sdgnys.com/2023Final/1920Final.pdf",
     "https://ulstercountyny.gov/sites/default/files/documents/KingstonCity-Final-Roll-2023.pdf",
-    "https://www.dutchessny.gov/TaxRollsPDF/countytown/2022/amenia23.pdf",
-    "https://ulstercountyny.gov/sites/default/files/documents/Denning-Final-Roll-2023.pdf"
+    "https://www.dutchessny.gov/TaxRollsPDF/countytown/2022/amenia23.pdf"
     ]
 
 
@@ -22,6 +24,7 @@ class PdfFormatter():
                 response.raise_for_status()
                 pdf_file = BytesIO(response.content)
                 pdf_reader = PyPDF2.PdfReader(pdf_file)
+                # creation_date = pdf_reader.metadata.creation_date
 
                 # Iterate through each page
                 for page_num in range(len(pdf_reader.pages)):
@@ -29,8 +32,8 @@ class PdfFormatter():
                     page = pdf_reader.pages[page_num]
                     # Extract text from the page
                     text = page.extract_text()
-
-                    self.get_groups(text)
+                    
+                    get_groups(text)
             except requests.exceptions.HTTPError as e:
                 print(f"Error: {str(e)}")
 
@@ -43,7 +46,12 @@ class PdfFormatter():
             'owner_address': '',
             'property_address': '',
             'property_type': '',
-            'full_market_value': ''
+            'full_market_value': '',
+            'acreage': '',
+            'coordinates': {
+                'nrth': 0,
+                'east': 0
+            },
         }
 
         # Split the text into lines
