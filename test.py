@@ -63,26 +63,26 @@ def get_groups(text):
     property_groups = []
     current_group = []
     property_details = {
-        'owner_name': '',
-        'owner_address': '',
-        'property_address': '',
-        'property_type': '',
-        'full_market_value': '',
-        'acres': '',
-        'feet': '',
-        'east': '',
-        'north': ''
+        # 'owner_name': '',
+        # 'owner_address': '',
+        # 'property_address': '',
+        # 'property_type': '',
+        # 'full_market_value': '',
+        # 'acres': '',
+        # 'feet': '',
+        # 'east': '',
+        # 'north': ''
     }
 
-
-    full_market_value = 'FULL MARKET VALUE'
-    # acres = 'ACRES'
-    feet = 'FRNT'
-
+    
     east_pattern = r'EAST-(\d{7})'
     north_pattern = r'NRTH-(\d{7})'
-    acres = r'ACRES(\s+\d+\.\d+)'
-    # front_in_feet = r'FRNT (\d+\.\d+)'
+    acres_pattern = r'ACRES(\s+\d+\.\d+)'
+    front_in_feet = r'FRNT(\s+\d+\.\d+)'
+    depth_in_feet = r'DPTH(\s+\d+\.\d+)'
+    market_value_pattern = r'FULL\s*MARKET\s+VALUE\s+(\d+\,\d+)'
+    property_address_pattern = r'\n\s*(\d+ [A-Za-z0-9\s]+)\s+'
+
     # depth_in_feet = r''
 
     # Split the text into lines
@@ -93,36 +93,45 @@ def get_groups(text):
         if line.strip().endswith('****'):
             # If we have collected lines in the current_group, add it to property_groups
             if current_group:
-                property_details['property_address'] = current_group[1][0:50].strip()
-                property_details['property_type'] = current_group[2][30:50].strip()
+                # property_details['property_address'] = current_group[1].strip()
+                # property_details['property_type'] = current_group[2][30:50].strip()
+
+                # if current_group[4][0].isnumeric():
+                #     property_details['owner_name'] = current_group[3][0:30].strip()
+                #     property_details['owner_address'] = current_group[4][0:30].strip() + ' ' + current_group[5][0:30].strip()
+                # else:
+                #     property_details['owner_name'] = current_group[3][0:30].strip() + ', ' + current_group[4][0:30].strip()
+                #     property_details['owner_address'] = current_group[5][0:30].strip() + ' ' + current_group[6][0:30].strip()
             
 
                 property_groups.append(property_details)
                 current_group = []
                 property_details = {}
-    
-        # Ulster county acres = [36:45]
-        if re.search(acres, line) is not None:
-            match = re.search(acres, line)
-            property_details['acres'] = match.group(1)
 
-        # front_match = re.search(front_in_feet, line)
-        # if  front_match is not None:
-        #     property_details['feet'] = front_match
+        acre_match = re.search(acres_pattern, line)
+        if acre_match is not None:
+            property_details['acres'] = acre_match.group(1).strip()
 
-        if full_market_value in line:
-            property_details['full_market_value'] = line[50:70].strip()
+        front_match = re.search(front_in_feet, line)
+        if front_match is not None:
+            property_details['front_feet'] = front_match.group(1).strip()
+            print(front_match.group())
 
-        if re.search(east_pattern, line) is not None:
-            match = re.search(east_pattern, line)
-            property_details['east'] = match.group(1)
+        depth_match = re.search(depth_in_feet, line)
+        if depth_match is not None:
+            property_details['depth_feet'] = depth_match.group(1).strip()
 
-        if re.search(north_pattern, line) is not None:
-            match = re.search(north_pattern, line)
-            property_details['north'] = match.group(1)
-        
-        if feet in line:
-            property_details['feet'] = line[25:60].strip()
+        market_value_match = re.search(market_value_pattern, line)
+        if market_value_match is not None:
+            property_details['full_market_value'] = market_value_match.group(1).strip()
+
+        east_match = re.search(east_pattern, line)
+        if east_match is not None:
+            property_details['east'] = east_match.group(1)
+
+        north_match = re.search(north_pattern, line)
+        if north_match is not None:
+            property_details['north'] = north_match.group(1)
 
         # Append the line to the current_group
         current_group.append(line)
@@ -136,8 +145,6 @@ def get_groups(text):
         property_groups.remove(property_groups[0])
     else:
         pass
-    
-    # property_groups = [group.strip() for group in property_groups if group.strip()]
 
     # Print each property group
     for group in property_groups:
