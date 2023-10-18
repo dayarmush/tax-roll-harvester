@@ -32,5 +32,7 @@ class ScrapeSite():
                     # Add it to the links list
                     self.links.append(href)
         return self.links
-
-# 'https://ulstercountyny.gov/real-property/assessment-rolls'
+    
+# s = ScrapeSite('https://ulstercountyny.gov/real-property/assessment-rolls')
+# s.get_request()
+# print(s.links)
