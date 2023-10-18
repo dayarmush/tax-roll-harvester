@@ -4,9 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+requests = "*"
+pip = "*"
 beautifulsoup4 = "*"
 pypdf2 = "*"
-requests = "*"
+flask = "*"
+flask-sqlalchemy = "*"
+flask-migrate = "*"
+sqlalchemy-serializer = "*"
 
 [dev-packages]
 
