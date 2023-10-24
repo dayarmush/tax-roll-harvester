@@ -2,6 +2,7 @@ import requests
 import PyPDF2
 import re
 from io import BytesIO
+import spacy
 
 pdf = ["https://ulstercountyny.gov/sites/default/files/documents/KingstonCity-Final-Roll-2023.pdf"]
 
@@ -87,10 +88,23 @@ class ExtractPropertyDetails():
     # use NLP https://unbiased-coder.com/extract-names-python-nltk/
     def get_owners_name(self, group):
         if len(group) > 0:
-            search_area = group[3] + group[4]
-            owners_line = re.search(r'^[A-Za-z\s]+$', search_area)
-            if owners_line is not None:
-                return owners_line.group()
+            search_area = group[3][0:60] + group[4][0:50]
+
+            nlp = spacy.load("en_core_web_sm")
+            doc = nlp(search_area)
+
+            for ent in doc.ents:
+                if ent.label_ == "PERSON":
+                    print(ent.text, ent.start_char, ent.end_char, ent.label_)
+
+
+
+        # if len(group) > 0:
+        #     search_area = group[3]
+        #     print(group[3] + group[4])
+        #     owners_line = re.search(r'^[A-Za-z\s]+$', search_area)
+        #     if owners_line is not None:
+        #         return owners_line.group()
 
     def get_owners_address(self, group):
         pass
