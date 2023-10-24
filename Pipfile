@@ -14,6 +14,8 @@ flask-migrate = "*"
 sqlalchemy-serializer = "*"
 nltk = "*"
 spacy = "*"
+python-dotenv = "*"
+flask-cors = "*"
 
 [dev-packages]
 

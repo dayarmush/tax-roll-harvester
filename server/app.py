@@ -4,12 +4,15 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin as SM
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import validates
+from pdf_handling import PdfDataExtractor
 from scraping import ScrapeSite
+from flask_cors import CORS
 import os
 
 db = SQLAlchemy()
 
 app = Flask( __name__ )
+CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///properties'
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
@@ -26,8 +29,9 @@ db.init_app(app)
 def get_url():
     URL = request.get_json()
     site = ScrapeSite(URL['url'])
+    site.links = []
     site.get_request()
-    return site.links
+    return site.links, 200
     
 
 
