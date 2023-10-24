@@ -16,6 +16,7 @@ nltk = "*"
 spacy = "*"
 python-dotenv = "*"
 flask-cors = "*"
+transformers = "*"
 
 [dev-packages]
 

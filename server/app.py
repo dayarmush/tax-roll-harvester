@@ -1,12 +1,12 @@
-from flask import Flask, session, request, render_template
-from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy_serializer import SerializerMixin as SM
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import validates
-from pdf_handling import PdfDataExtractor
-from scraping import ScrapeSite
-from flask_cors import CORS
+from config import Flask, session, request, render_template
+from config import Migrate
+from config import SQLAlchemy
+from config import SerializerMixin as SM
+from config import IntegrityError
+from config import validates
+from config import PdfDataExtractor
+from config import ScrapeSite
+from config import CORS
 import os
 
 db = SQLAlchemy()
