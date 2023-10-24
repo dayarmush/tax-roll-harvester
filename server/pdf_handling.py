@@ -31,6 +31,8 @@ class PdfDataExtractor():
                         # Send pdf page down to Extract the property groups 
                         ExtractPropertyGroups(text)
                         print(page_num)
+                    else:
+                        break
             except requests.exceptions.HTTPError as e:
                 print(f"Error: {str(e)}")
 
