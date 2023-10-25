@@ -1,4 +1,6 @@
 import re
+from models.property import Property 
+from config import db
 class ExtractPropertyDetails():
 
     extracted_data = {}
@@ -6,18 +8,53 @@ class ExtractPropertyDetails():
     def __init__(self, property_group) -> None:
         self.property_group = property_group
 
-        # print(self.get_market_value(self.property_group))
-        # print(self.get_depth_in_feet(self.property_group))
-        # print(self.get_front_in_feet(self.property_group))
-        # print(self.get_east_coordinates(self.property_group))
-        # print(self.get_north_Coordinates(self.property_group))
-        # print(self.get_acres(self.property_group))
-        # print(self.get_id(self.property_group))
-        # print(self.get_property_address(self.property_group))
-        # print(self.get_property_type(self.property_group))
-        # print(self.get_owners_name(self.property_group))
-        print(self.get_owners_address_one(self.property_group))
-        print(self.get_owners_address_two(self.property_group))
+        market_value = self.get_market_value(self.property_group)
+        depth_in_feet = self.get_depth_in_feet(self.property_group)
+        front_in_feet = self.get_front_in_feet(self.property_group)
+        east = self.get_east_coordinates(self.property_group)
+        north = self.get_north_Coordinates(self.property_group)
+        acres = self.get_acres(self.property_group)
+        property_id = self.get_id(self.property_group)
+        property_address = self.get_property_address(self.property_group)
+        property_type = self.get_property_type(self.property_group)
+        owners_name = self.get_owners_name(self.property_group)
+        owners_address_one = self.get_owners_address_one(self.property_group)
+        owners_address_two = self.get_owners_address_two(self.property_group)
+        
+        print(market_value,
+        depth_in_feet,
+        front_in_feet,
+        east,
+        north,
+        acres,
+        property_id,
+        property_address,
+        property_type,
+        owners_name,
+        owners_address_one,
+        owners_address_two)
+
+        try:
+            property = Property(
+                market_value = market_value,
+                depth_in_feet = depth_in_feet,
+                front_in_feet = front_in_feet,
+                east = east,
+                north = north,
+                acres = acres,
+                property_id = property_id,
+                property_address = property_address,
+                property_type = property_type,
+                owners_name = owners_name,
+                owners_address_one = owners_address_one,
+                owners_address_two = owners_address_two
+            )
+
+            db.session.add(property)
+            db.session.commit()
+
+        except (ValueError) as e:
+            print("Failed to create a new property due to error", str(e))
 
     def get_id(self, group):
         if len(group) > 0:

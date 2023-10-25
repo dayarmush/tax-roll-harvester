@@ -1,7 +1,7 @@
 import requests
 import PyPDF2
 from io import BytesIO
-from config import ExtractPropertyGroups
+from classes.property_groups import ExtractPropertyGroups
 pdf = ["https://ulstercountyny.gov/sites/default/files/documents/KingstonCity-Final-Roll-2023.pdf"]
 
 # Extractor 
@@ -34,4 +34,4 @@ class PdfDataExtractor():
             except requests.exceptions.HTTPError as e:
                 print(f"Error: {str(e)}")
 
-PdfDataExtractor(pdf)
+# PdfDataExtractor(pdf)

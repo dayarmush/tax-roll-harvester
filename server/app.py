@@ -1,20 +1,13 @@
-from config import Flask, session, request, render_template
-from config import Migrate
-from config import SQLAlchemy
-from config import SerializerMixin as SM
-from config import IntegrityError
-from config import validates
-from config import PdfDataExtractor
-from config import ScrapeSite
-from config import CORS
+from config import Flask, session, request, render_template, db, Migrate, CORS
 import os
 
-db = SQLAlchemy()
+from classes.scraping import ScrapeSite
+from classes.pdf_handling import PdfDataExtractor
 
 app = Flask( __name__ )
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///properties'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///properties.db'
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -29,8 +22,6 @@ db.init_app(app)
 def get_url():
     URL = request.get_json()
     site = ScrapeSite(URL['url'])
-    site.links = []
-    site.get_request()
     return site.links, 200
     
 

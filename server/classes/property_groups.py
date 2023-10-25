@@ -1,4 +1,4 @@
-from config import ExtractPropertyDetails
+from classes.property_details import ExtractPropertyDetails
 
 # Class to extract property groups from given text
 class ExtractPropertyGroups():

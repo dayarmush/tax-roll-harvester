@@ -1,11 +1,14 @@
 from bs4 import BeautifulSoup
 import requests
+from classes.pdf_handling import PdfDataExtractor
 
 class ScrapeSite():
 
     def __init__(self, url, links=[]):
         self.url = url
         self.links = links
+        self.get_request()
+        
 
     # Method to grab the HTML of the website
     def get_request(self):
@@ -30,7 +33,7 @@ class ScrapeSite():
                 if href.endswith('.pdf'):
                     # Add it to the links list
                     self.links.append(href)
-        return self.links
+        PdfDataExtractor(self.links)
     
 # s = ScrapeSite('https://ulstercountyny.gov/real-property/assessment-rolls')
 # s.get_request()
