@@ -2,7 +2,6 @@ from config import Flask, session, request, render_template, db, Migrate, CORS
 import os
 
 from classes.scraping import ScrapeSite
-from classes.pdf_handling import PdfDataExtractor
 
 app = Flask( __name__ )
 CORS(app)

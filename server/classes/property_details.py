@@ -20,38 +20,34 @@ class ExtractPropertyDetails():
         owners_name = self.get_owners_name(self.property_group)
         owners_address_one = self.get_owners_address_one(self.property_group)
         owners_address_two = self.get_owners_address_two(self.property_group)
-        
-        print(market_value,
-        depth_in_feet,
-        front_in_feet,
-        east,
-        north,
-        acres,
-        property_id,
-        property_address,
-        property_type,
-        owners_name,
-        owners_address_one,
-        owners_address_two)
 
         try:
-            property = Property(
-                market_value = market_value,
-                depth_in_feet = depth_in_feet,
-                front_in_feet = front_in_feet,
-                east = east,
-                north = north,
-                acres = acres,
-                property_id = property_id,
-                property_address = property_address,
-                property_type = property_type,
-                owners_name = owners_name,
-                owners_address_one = owners_address_one,
-                owners_address_two = owners_address_two
-            )
+            if (market_value is not None and
+                east is not None and
+                north is not None and
+                property_id is not None and
+                property_address is not None and
+                property_type is not None and
+                owners_name is not None and
+                owners_address_one is not None):
 
-            db.session.add(property)
-            db.session.commit()
+                property = Property(
+                    market_value = market_value,
+                    depth_in_feet = depth_in_feet,
+                    front_in_feet = front_in_feet,
+                    east = east,
+                    north = north,
+                    acres = acres,
+                    property_id = property_id,
+                    property_address = property_address,
+                    property_type = property_type,
+                    owners_name = owners_name,
+                    owners_address_one = owners_address_one,
+                    owners_address_two = owners_address_two
+                )
+
+                db.session.add(property)
+                db.session.commit()
 
         except (ValueError) as e:
             print("Failed to create a new property due to error", str(e))
@@ -63,24 +59,24 @@ class ExtractPropertyDetails():
                 return id_match.group(1).strip()
 
     def get_property_address(self, group):
-        if len(group) > 0:
+        if len(group) > 1:
             address_match = group[1][:50]
             if address_match is not None:
                 return address_match.strip() 
     # owner one and owner two?
     def get_owners_name(self, group):
         owners = ''
-        if len(group) > 0:
+        if len(group) > 4:
             if group[4][0].isnumeric():
-                owners = group[3][:30]
+                owners = group[3][:30].strip()
             else:
-                owners = group[3][:30] + ' ' + group[4][:30]
+                owners = group[3][:30].strip() + ' ' + group[4][:30].strip()
         return owners.strip()
 
     def get_owners_address_one(self, group):
         address_one = ''
 
-        if len(group) > 0:
+        if len(group) > 4:
             if group[4][0].isnumeric() or group[4][:2] == 'PO':
                 address_one = group[4][:30]
             else:
@@ -91,7 +87,7 @@ class ExtractPropertyDetails():
     def get_owners_address_two(self, group):
         address_two = ''
 
-        if len(group) > 0:
+        if len(group) > 4:
             if group[4][0].isnumeric() or group[4][:2] == 'PO':
                 address_two = group[5][:30]
             else:
@@ -100,20 +96,20 @@ class ExtractPropertyDetails():
         return address_two.strip()
 
     def get_property_type(self, group):
-        if len(group) > 0:
+        if len(group) > 2:
             type_match = re.search(r'\s(\d{3})\s', group[2])
             if type_match is not None:
                 return type_match.group().strip()
         
     def get_depth_in_feet(self, group):
-        if len(group) > 0:
+        if len(group) > 4:
             search_text = group[4] + group[5]
             depth_match = re.search(r'DPTH(\s+\d+\.\d+)', search_text)
             if depth_match is not None:
                 return depth_match.group(1).strip()
 
     def get_front_in_feet(self, group):
-        if len(group) > 0:
+        if len(group) > 4:
             search_area = group[4] + group[5]
             front_match = re.search(r'FRNT(\s+\d+\.\d+)', search_area)
             if front_match is not None:
