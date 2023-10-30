@@ -11,9 +11,7 @@ class Property(db.Model, SM):
     north = db.Column(db.String)
     acres = db.Column(db.String)
     tax_id = db.Column(db.String)
-
+    address_id = db.Column(db.Integer, db.ForeignKey('addresses.id'))
     
-
-
     def __repr__(self) -> str:
         return f"<Property ID: {self.tax_id}, Property Owner: >"

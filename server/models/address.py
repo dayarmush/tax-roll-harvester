@@ -11,5 +11,8 @@ class Address:
     zipcode = db.Column(db.String)
     address_type = db.Column(db.String)
 
+    property = db.relationship('Property', backref='address', cascade='all, delete-orphan')
+    owner = db.relationship('Owner', backref='address', cascade='all, delete-orphan')
+
     def __repr__(self):
         return f"<Property Address: {self.street_address}>"
