@@ -1,56 +1,48 @@
 import re
-from models.property import Property 
-from config import db
+# from models.property import Property 
+# from config import db
+from db_filler import FillDbRows
 class ExtractPropertyDetails():
 
     extracted_data = {}
     # None is coming from line one being passed down itself
-    def __init__(self, property_group) -> None:
+    def __init__(self, property_group, creation_date, town) -> None:
         self.property_group = property_group
+        self.creation_date = creation_date
+        self.town = town
 
         market_value = self.get_market_value(self.property_group)
-        depth_in_feet = self.get_depth_in_feet(self.property_group)
+        # depth_in_feet = self.get_depth_in_feet(self.property_group)
         front_in_feet = self.get_front_in_feet(self.property_group)
         east = self.get_east_coordinates(self.property_group)
         north = self.get_north_Coordinates(self.property_group)
         acres = self.get_acres(self.property_group)
-        property_id = self.get_id(self.property_group)
+        parcel_number = self.get_id(self.property_group)
         property_address = self.get_property_address(self.property_group)
         property_type = self.get_property_type(self.property_group)
-        owners_name = self.get_owners_name(self.property_group)
+        owner_one = self.get_owner_one_name(self.property_group)
+        owner_two = self.get_owner_two_name(self.property_group)
         owners_address_one = self.get_owners_address_one(self.property_group)
         owners_address_two = self.get_owners_address_two(self.property_group)
 
-        try:
-            if (market_value is not None and
-                east is not None and
-                north is not None and
-                property_id is not None and
-                property_address is not None and
-                property_type is not None and
-                owners_name is not None and
-                owners_address_one is not None):
+        extracted_data = {
+            'town': self.town,
+            'creation_date': self.creation_date,
+            'market_value': market_value,
+            'front_in_feet': front_in_feet,
+            'east': east,
+            'north': north,
+            'acres': acres,
+            'parcel_number': parcel_number,
+            'property_address': property_address,
+            'property_type': property_type,
+            'owner_one': owner_one,
+            'owner_two': owner_two,
+            'owners_address_one': owners_address_one,
+            'owners_address_two': owners_address_two
+        }
 
-                property = Property(
-                    market_value = market_value,
-                    depth_in_feet = depth_in_feet,
-                    front_in_feet = front_in_feet,
-                    east = east,
-                    north = north,
-                    acres = acres,
-                    property_id = property_id,
-                    property_address = property_address,
-                    property_type = property_type,
-                    owners_name = owners_name,
-                    owners_address_one = owners_address_one,
-                    owners_address_two = owners_address_two
-                )
-
-                db.session.add(property)
-                db.session.commit()
-
-        except (ValueError) as e:
-            print("Failed to create a new property due to error", str(e))
+        FillDbRows(extracted_data)
 
     def get_id(self, group):
         if len(group) > 0:
@@ -63,15 +55,19 @@ class ExtractPropertyDetails():
             address_match = group[1][:50]
             if address_match is not None:
                 return address_match.strip() 
-    # owner one and owner two?
-    def get_owners_name(self, group):
-        owners = ''
+
+    def get_owner_one_name(self, group):
+        owner = ''
         if len(group) > 4:
-            if group[4][0].isnumeric():
-                owners = group[3][:30].strip()
-            else:
-                owners = group[3][:30].strip() + ' ' + group[4][:30].strip()
-        return owners.strip()
+                owner = group[3][:30].strip()
+        return owner.strip()
+    
+    def get_owner_two_name(self, group):
+        owner = ''
+        if len(group) > 4:
+            if not group[4][0].isnumeric() and group[4][:2] != 'PO':
+                owner = group[4][:30].strip()
+        return owner.strip()
 
     def get_owners_address_one(self, group):
         address_one = ''
@@ -137,8 +133,8 @@ class ExtractPropertyDetails():
                 return acre_match.group(1).strip()
 
     def get_market_value(self, group): 
-        if len(group) > 0:
-            line = len(group)-1
-            market_value_match = re.search(r'FULL\s*MARKET\s+VALUE\s+(\d+\,\d+)', group[line])
+        if len(group) > 5:
+            search_area = ' '.join(group[5:-2])
+            market_value_match = re.search(r'FULL\s*MARKET\s+VALUE\s+(\d+\,\d+)', search_area)
             if market_value_match is not None:
                 return market_value_match.group(1).strip()

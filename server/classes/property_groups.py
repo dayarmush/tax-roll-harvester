@@ -1,9 +1,9 @@
-from classes.property_details import ExtractPropertyDetails
+from property_details import ExtractPropertyDetails
 
 # Class to extract property groups from given text
 class ExtractPropertyGroups():
 
-    def __init__(self, pdf_page):
+    def __init__(self, pdf_page, creation_date, town):
         self.pdf_page = pdf_page
 
         current_group = []
@@ -16,7 +16,7 @@ class ExtractPropertyGroups():
         # Send to another class property data processor
             if lines[i].strip().endswith('****'):
                     # print(current_group)
-                    ExtractPropertyDetails(current_group)
+                    ExtractPropertyDetails(current_group, creation_date, town)
                     current_group = []
             # Append the line to the current_group
             current_group.append(lines[i])

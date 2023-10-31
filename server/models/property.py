@@ -10,10 +10,17 @@ class Property(db.Model, SM):
     east = db.Column(db.String)
     north = db.Column(db.String)
     acres = db.Column(db.String)
-    tax_id = db.Column(db.String)
-    address_id = db.Column(db.Integer, db.ForeignKey('addresses.id'))
+    parcel_number = db.Column(db.String)
+    property_address = db.Column(db.String)
+    property_type = db.Column(db.String)
+    owners_name = db.Column(db.String)
+    owners_address_one = db.Column(db.String)
+    owners_address_two = db.Column(db.String)
 
-    owner = db.relationship('PropertyOwner', backref='owner', cascade='all, delete_orphan')
+
+    # address_id = db.Column(db.Integer, db.ForeignKey('addresses.id'))
+
+    # owner = db.relationship('PropertyOwner', backref='owner', cascade='all, delete-orphan')
     
     def __repr__(self) -> str:
         return f"<Property ID: {self.tax_id}, Property Owner: >"
