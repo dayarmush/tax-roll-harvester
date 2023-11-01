@@ -4,9 +4,9 @@ from io import BytesIO
 import datetime
 import re
 from property_groups import ExtractPropertyGroups
-pdfs = ['https://www.dutchessny.gov/TaxRollsPDF/countytown/2022/rhinebeck23.pdf']
-        # 'https://www.dutchessny.gov/TaxRollsPDF/countytown/2022/redhook23.pdf'
-        # 'https://www.dutchessny.gov/TaxRollsPDF/countytown/2022/milan23.pdf']
+pdfs = ['https://www.dutchessny.gov/TaxRollsPDF/countytown/2022/rhinebeck23.pdf',
+        'https://www.dutchessny.gov/TaxRollsPDF/countytown/2022/redhook23.pdf',
+        'https://www.dutchessny.gov/TaxRollsPDF/countytown/2022/milan23.pdf']
 
 # Extractor 
 class PdfDataExtractor():
@@ -27,15 +27,14 @@ class PdfDataExtractor():
                 for page_num in range(len(pdf_reader.pages)):
                     
                     # Get a page
-                    if page_num < 2:
-                        page = pdf_reader.pages[page_num]
-                        # Extract text from the page
-                        text = page.extract_text()
-                        # Send pdf page down to Extract the property groups 
-                        ExtractPropertyGroups(text, creation_date, town)
-                        print(page_num)
-                    else:
-                        break
+
+                    page = pdf_reader.pages[page_num]
+                    # Extract text from the page
+                    text = page.extract_text()
+                    # Send pdf page down to Extract the property groups 
+                    ExtractPropertyGroups(text, creation_date, town)
+                    print(page_num)
+
             except requests.exceptions.HTTPError as e:
                 print(f"Error: {str(e)}")
 

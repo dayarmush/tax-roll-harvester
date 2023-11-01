@@ -1,5 +1,4 @@
-import spacy
-
+import pandas as pd
 
 text_data = """
 STATE OF NEW YORK                          2 0 2 3   F I N A L   A S S E S S M E N T   R O L L                           PAGE      1
@@ -56,25 +55,6 @@ Kingston, NY 12401             530-544                                 LB008 Kin
 ************************************************************************************************************************************
 """
 
-text = "Ryu Byuong Cory                KINGSTON CONSOL 510800-99      66,000   CITY    TAXABLE VALUE            152,000 544 First Ave                  PARATIAL ASSMT. 2010          152,000   SCHOOL  TAXABLE VALUE            152,000"
 
-# nlp = spacy.load("en_core_web_sm")
-# doc = nlp(text)
+pd.DataFrame()
 
-# for ent in doc.ents:
-#     if ent.label_ == "PERSON":
-#         print(ent.text, ent.start_char, ent.end_char, ent.label_)
-
-
-from transformers import AutoTokenizer, AutoModelForTokenClassification
-from transformers import pipeline
-
-
-tokenizer = AutoTokenizer.from_pretrained("Babelscape/wikineural-multilingual-ner")
-model = AutoModelForTokenClassification.from_pretrained("Babelscape/wikineural-multilingual-ner")
-
-
-nlp = pipeline("ner", model=model, tokenizer=tokenizer, grouped_entities=True)
-
-ner_results = nlp(text)
-print(ner_results)

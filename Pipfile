@@ -17,6 +17,7 @@ spacy = "*"
 python-dotenv = "*"
 flask-cors = "*"
 transformers = "*"
+pandas = "*"
 
 [dev-packages]
 
