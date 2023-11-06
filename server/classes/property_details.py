@@ -1,6 +1,4 @@
 import re
-# from models.property import Property 
-# from config import db
 from data_frame import CreateFrame
 class ExtractPropertyDetails():
 
@@ -41,10 +39,14 @@ class ExtractPropertyDetails():
             'owners_address_one': owners_address_one,
             'owners_address_two': owners_address_two
         }
+        print(extracted_data)
 
-        if 'LLC' in owner_one or 'Inc' in owner_one:
+        if ('LLC' in owner_one or 
+            'Inc' in owner_one or 
+            'LLC' in owner_two or 
+            'Inc' in owner_two):
             extracted_data['owned_by'] = 'Business'
-        elif 'Trustee' in owner_one:
+        elif 'Trustee' in owner_one or 'Trustee' in owner_two:
             extracted_data['owned_by'] = 'Trustee'
         else:
             extracted_data['owned_by'] = 'Personal'
@@ -58,8 +60,8 @@ class ExtractPropertyDetails():
         if property_type is not None:
             extracted_data['property_type'] = int(property_type)
 
-        if parcel_number is not None:
-            CreateFrame(extracted_data)
+        # if parcel_number is not None:
+        #     CreateFrame(extracted_data)
 
     def get_id(self, group):
         if len(group) > 0:
