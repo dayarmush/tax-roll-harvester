@@ -4,7 +4,7 @@ class ExtractPropertyDetails():
 
     extracted_data = {}
     # None is coming from line one being passed down itself
-    def __init__(self, property_group, creation_date, town) -> None:
+    def __init__(self, property_group, creation_date, town):
         self.property_group = property_group
         self.creation_date = creation_date
         self.town = town
@@ -39,8 +39,7 @@ class ExtractPropertyDetails():
             'owners_address_one': owners_address_one,
             'owners_address_two': owners_address_two
         }
-        print(extracted_data)
-
+        
         if ('LLC' in owner_one or 
             'Inc' in owner_one or 
             'LLC' in owner_two or 
@@ -60,8 +59,8 @@ class ExtractPropertyDetails():
         if property_type is not None:
             extracted_data['property_type'] = int(property_type)
 
-        # if parcel_number is not None:
-        #     CreateFrame(extracted_data)
+        if parcel_number is not None:
+            CreateFrame(extracted_data)
 
     def get_id(self, group):
         if len(group) > 0:
@@ -159,7 +158,7 @@ class ExtractPropertyDetails():
 
     def get_market_value(self, group): 
         if len(group) > 5:
-            search_area = ' '.join(group[5:-2])
+            search_area = ' '.join(group[5:])
             market_value_match = re.search(r'FULL\s*MARKET\s+VALUE\s+(\d+\,\d+)', search_area)
             if market_value_match is not None:
                 return market_value_match.group(1).strip()

@@ -9,8 +9,8 @@ pdfs = ['https://www.dutchessny.gov/TaxRollsPDF/countytown/2022/rhinebeck23.pdf'
         'https://www.dutchessny.gov/TaxRollsPDF/countytown/2022/milan23.pdf']
 
 pdfs2020 = [
-    # 'https://www.dutchessny.gov/TaxRollsPDF/countytown/2020/rhinebeck21.pdf',
-    'https://www.dutchessny.gov/TaxRollsPDF/countytown/2020/milan21.pdf'
+    'https://www.dutchessny.gov/TaxRollsPDF/countytown/2020/rhinebeck21.pdf',
+    # 'https://www.dutchessny.gov/TaxRollsPDF/countytown/2020/milan21.pdf'
     # 'https://www.dutchessny.gov/TaxRollsPDF/countytown/2020/redhook21.pdf'
 ]
 
@@ -33,14 +33,16 @@ class PdfDataExtractor():
 
                 # Iterate through each page
                 for page_num in range(len(pdf_reader.pages)):
-                    # if page_num < 10:
-                    # Get a page
-                    page = pdf_reader.pages[page_num]
-                    # Extract text from the page
-                    text = page.extract_text()
-                    # Send pdf page down to Extract the property groups 
-                    ExtractPropertyGroups(text, creation_date, town[1])
-                    print(page_num)
+                    if page_num == 0:
+                        continue
+                    else:
+                        # Get a page
+                        page = pdf_reader.pages[page_num]
+                        # Extract text from the page
+                        text = page.extract_text()
+                        # Send pdf page down to Extract the property groups 
+                        ExtractPropertyGroups(text, creation_date, town[1])
+                        print(page_num)
 
             except requests.exceptions.HTTPError as e:
                 print(f"Error: {str(e)}")

@@ -55,6 +55,94 @@ Kingston, NY 12401             530-544                                 LB008 Kin
 ************************************************************************************************************************************
 """
 
+import requests
+import PyPDF2
+from io import BytesIO
+from property_details_21 import ExtractPropertyDetailsFrom21
 
-pd.DataFrame()
 
+pdfs = ['https://www.dutchessny.gov/TaxRollsPDF/countytown/2022/rhinebeck23.pdf',
+        'https://www.dutchessny.gov/TaxRollsPDF/countytown/2022/redhook23.pdf',
+        'https://www.dutchessny.gov/TaxRollsPDF/countytown/2022/milan23.pdf']
+
+pdfs2020 = [
+    'https://www.dutchessny.gov/TaxRollsPDF/countytown/2020/rhinebeck21.pdf',
+    # 'https://www.dutchessny.gov/TaxRollsPDF/countytown/2020/milan21.pdf'
+    # 'https://www.dutchessny.gov/TaxRollsPDF/countytown/2020/redhook21.pdf'
+]
+
+# Extractor 
+class TestPdfDataExtractor():
+
+    def __init__(self, pdf_links):
+        self.pdf_links = pdf_links
+
+        for link in self.pdf_links:
+            response = requests.get(link)
+            try:
+                response.raise_for_status()
+                pdf_file = BytesIO(response.content)
+                pdf_reader = PyPDF2.PdfReader(pdf_file)
+                creation_date = str(pdf_reader.metadata.creation_date)[:10]
+                print(pdf_reader.metadata)
+                # town = re.search(r'\d{4} (?:Town(?:\sand\sVillage)? of )?(.+?) Tax Roll', pdf_reader.metadata.subject).group(1)
+                town = pdf_reader.metadata.title.split(' ')
+
+
+                # Get a page
+                page = pdf_reader.pages[325]
+                # Extract text from the page
+                text = page.extract_text()
+                # Send pdf page down to Extract the property groups 
+                TestExtractPropertyGroups(text, creation_date, town[1])
+
+            except requests.exceptions.HTTPError as e:
+                print(f"Error: {str(e)}")
+
+
+class TestExtractPropertyGroups():
+
+    def __init__(self, pdf_page, creation_date, town=None):
+        self.pdf_page = pdf_page
+
+        current_group = []
+        # print(self.pdf_page)
+        # Split the text into lines
+        lines = pdf_page.split('\n')
+        # First 7 lines are not needed 
+        for i in range(7, len(lines)):
+        # Check if the last item on the line starts with stars
+        # Send to another class property data processor
+            if lines[i].strip().endswith('****'):
+                    # print((current_group))
+                    # ExtractPropertyDetails(current_group, creation_date, town)
+                    ExtractPropertyDetailsFrom21(current_group, creation_date, town)
+                    current_group = []
+            # Append the line to the current_group
+            current_group.append(lines[i])
+
+
+class ExtractPropertyDetailsFrom21:
+    def __init__(self, unfiltered_details, creation_date, town):
+        self.unfiltered_details = unfiltered_details
+        self.creation_date = creation_date
+        self.property_group = []
+        self.town = town
+
+        results = [i for i in self.unfiltered_details if i]
+        joined_property = ''.join(results)
+
+        self.property_group.append(joined_property[:133])
+        self.property_group.append(joined_property[133:264])
+        self.property_group.append(joined_property[264:396])
+        self.property_group.append(joined_property[396:528])
+        self.property_group.append(joined_property[528:660])
+        self.property_group.append(joined_property[660:792])
+        self.property_group.append(joined_property[792:847])
+        self.property_group.append(joined_property[847:917])
+        self.property_group.append(joined_property[916:])
+
+        print(self.property_group)
+
+
+TestPdfDataExtractor(pdfs2020)

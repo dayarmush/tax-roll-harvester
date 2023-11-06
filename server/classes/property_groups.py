@@ -1,4 +1,5 @@
 from property_details import ExtractPropertyDetails
+from property_details_21 import ExtractPropertyDetailsFrom21
 
 # Class to extract property groups from given text
 class ExtractPropertyGroups():
@@ -16,7 +17,8 @@ class ExtractPropertyGroups():
         # Send to another class property data processor
             if lines[i].strip().endswith('****'):
                     # print((current_group))
-                    ExtractPropertyDetails(current_group, creation_date, town)
+                    # ExtractPropertyDetails(current_group, creation_date, town)
+                    ExtractPropertyDetailsFrom21(current_group, creation_date, town)
                     current_group = []
             # Append the line to the current_group
             current_group.append(lines[i])
